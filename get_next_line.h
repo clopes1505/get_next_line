@@ -6,11 +6,11 @@
 /*   By: clopes <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 09:21:06 by clopes            #+#    #+#             */
-/*   Updated: 2019/07/05 22:13:19 by clopes           ###   ########.fr       */
+/*   Updated: 2019/07/24 12:04:38 by clopes           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define BUFF_SIZE 100
+#define BUFF_SIZE 10
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 

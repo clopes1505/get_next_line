@@ -6,7 +6,7 @@
 /*   By: clopes <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/23 13:30:40 by clopes            #+#    #+#             */
-/*   Updated: 2019/07/09 14:47:27 by clopes           ###   ########.fr       */
+/*   Updated: 2019/07/24 11:40:10 by clopes           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ char	*ft_strdup(const char *s1)
 	char	*dup;
 
 	k = 0;
+	if (s1 == NULL)
+		return (ft_strnew(0));
 	size = ft_strlen((char *)s1);
 	if (!(dup = (char *)malloc(sizeof(char) * size + 1)))
 		return (NULL);

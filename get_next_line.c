@@ -6,7 +6,7 @@
 /*   By: clopes <clopes@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 09:16:46 by clopes            #+#    #+#             */
-/*   Updated: 2019/07/15 08:35:28 by clopes           ###   ########.fr       */
+/*   Updated: 2019/07/24 12:10:38 by clopes           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,32 +55,51 @@ int		get_next_line(const int fd, char **line)
 	static char *str[1024];
 	char 		readstr[BUFF_SIZE + 1];
 	char		*temp;
+	char		*ptr;
 	int 		k;
 
-	//ft_putendl("1");
 	if (fd < 0 || line == NULL || BUFF_SIZE <= 0)
 		return(-1);
 	if(!str[fd])
 		str[fd] = ft_strnew(0);
-	//ft_putendl("2");
-	temp = ft_strdup(str[fd]);
 	while((k = read(fd, readstr, BUFF_SIZE)) > 0)
 		{
+			temp = ft_strdup(str[fd]);
 			readstr[k] = '\0';
 			str[fd] = ft_strjoin(temp, readstr);
-	//		ft_putendl(readstr);
-			if(check_newline(str[fd]) == 1)
-				//ft_putendl("Loops");
+			ft_strdel(&temp);
+			if((ptr = ft_strchr(str[fd], '\n')) != NULL)
 				break ;
 		}
-	//ft_putendl("Fruit");
-	*line = str[fd];
-	if (k < BUFF_SIZE || ft_strlen(str[fd]) == 0)
+		if (!ft_strlen(str[fd]))
 		return (0);
-	//ft_putendl("Moment");
-	//ft_putendl("Truth");
-	free(temp);
-		return(1);
+//	if (ptr)
+//	{
+//		*ptr = '\0';
+//		if (ptr + 1 != NULL)
+//		temp = ft_strdup(ptr +1);
+//		else 
+//			temp = NULL;
+//	}
+		if (ptr)
+	{
+		*line = ft_strsub(str[fd], 0, ptr - str[fd]);
+		if (ptr + 1 != NULL)
+		ptr = ft_strdup(ptr + 1);
+		free(str[fd]);
+		str[fd] = ptr;
+	}
+	else
+	{
+		*line = str[fd];
+		str[fd] = ft_strnew(0);
+	}
+	//if (str[fd] != NULL)
+		//*line = ft_strdup(str[fd]);
+	//str[fd] = temp;
+//	if (k == 0 && ft_strlen(str[fd]) == 0)
+//		return (0);
+	return(1);
 }
 int 	main(int argc, char **argv)
 {
@@ -91,8 +110,11 @@ int 	main(int argc, char **argv)
 	fd = open(argv[1], O_RDONLY);
 	while ((get_next_line(fd, &str)) > 0)
 	{
+		if (str != NULL)
+		{
 		ft_putendl(str);
 		free(str);
+		}
 	}
 	return(0);
 }
