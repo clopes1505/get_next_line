@@ -3,83 +3,66 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clopes <clopes@student.42.fr>              +#+  +:+       +#+        */
+/*   By: clopes <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/01 09:16:46 by clopes            #+#    #+#             */
-/*   Updated: 2019/08/16 06:58:53 by clopes           ###   ########.fr       */
+/*   Updated: 2019/11/04 11:34:35 by clopes           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "./get_next_line.h"
 
-static char		*add_lines(char *line, char *temp)
+static char		*add_to_array(char *lines, char *buf)
 {
-	char *str;
+	char *new;
 
-	str = ft_strjoin(line, temp);
-	free(line);
-	return (str);
+	new = ft_strjoin(lines, buf);
+	ft_strdel(&lines);
+	return (new);
 }
 
-static char		*get_line(char **line, char *str)
+static char		*get_line(char **line, char *lines)
 {
 	char	*temp;
-	int		k;
+	int		i;
 
-	k = 0;
-	while (str[k] != '\n' && str[k] != '\0')
-		k++;
-	*line = ft_strsub(str, 0, k);
-	if (ft_strcmp(*line, str) == 0)
+	i = 0;
+	while (lines[i] != '\n' && lines[i] != '\0')
+		i++;
+	*line = ft_strsub(lines, 0, i);
+	if (ft_strcmp(*line, lines) == 0)
 		return (NULL);
 	else
 	{
-		temp = ft_strsub(str, k + 1, (ft_strlen(str + k) + 1));
-		free(str);
+		temp = ft_strsub(lines, i + 1, (ft_strlen(lines + i) + 1));
+		ft_strdel(&lines);
 	}
 	return (temp);
 }
 
 int				get_next_line(const int fd, char **line)
 {
-	char		temp[BUFF_SIZE + 1];
-	static char	*str[1024];
+	char		buf[BUFF_SIZE + 1];
+	static char	*lines[MAX_FD];
 	int			ret;
 
-	if (fd < 0 || fd > 1024 || line == NULL || read(fd, temp, 0) < 0)
+	ret = 0;
+	if (fd < 0 || fd > MAX_FD || line == NULL || read(fd, buf, 0) < 0)
 		return (-1);
-	if (!str[fd])
-		str[fd] = ft_strnew(0);
-	if (!(ft_strchr(str[fd], '\n')))
+	if (!lines[fd])
+		lines[fd] = ft_strnew(0);
+	if (!(ft_strchr(lines[fd], '\n')))
 	{
-		while ((ret = read(fd, temp, BUFF_SIZE)) > 0)
+		while ((ret = read(fd, buf, BUFF_SIZE)) > 0)
 		{
-			temp[ret] = '\0';
-			str[fd] = add_lines(str[fd], temp);
-			if (ft_strchr(str[fd], '\n'))
+			buf[ret] = '\0';
+			lines[fd] = add_to_array(lines[fd], buf);
+			if (ft_strchr(lines[fd], '\n'))
 				break ;
 		}
 	}
-	if (ret == 0 && !ft_strlen(str[fd]))
+	if (ret == 0 && !ft_strlen(lines[fd]))
 		return (0);
-	str[fd] = get_line(line, str[fd]);
+	lines[fd] = get_line(line, lines[fd]);
 	return (1);
-}
-int 	main(int argc, char **argv)
-{
-	int 	fd;
-	char	*str;
-
-	(void)argc;
-	fd = open(argv[1], O_RDONLY);
-	while ((get_next_line(fd, &str)) > 0)
-	{
-		if (str != NULL)
-		{
-		ft_putendl(str);
-		free(str);
-		}
-	}
-	sleep(60);
-	return(0);
 }
